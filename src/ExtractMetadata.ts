@@ -2,7 +2,7 @@ import { Transform } from 'stream';
 import { getLogger } from './Logger';
 import type { IGameData } from './types';
 
-const logger = getLogger();
+const logger = getLogger({ name: 'ExtractMetadata' });
 
 const INT_SIZE_32 = 4;
 const PRE_GAME_INFO_START_INDEX = 12;
@@ -67,7 +67,7 @@ export class ExtractMetadataToNdjson extends Transform {
     try {
       const result = extractReplayMetadata(data, filePath);
       if (result) {
-        this.push(`${JSON.stringify(result)}\n`);
+        this.push(result);
       }
       callback();
     } catch (error) {

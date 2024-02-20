@@ -1,25 +1,12 @@
 import { readdir } from 'fs/promises';
-import { createWriteStream, readFile } from 'fs';
-import { Readable, Transform } from 'stream';
+import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
 import { getLogger } from './Logger';
 import { ExtractMetadataToNdjson } from './ExtractMetadata';
+import { jsonifyObjectStream, readFileStream } from './transformUtils';
 
 const DIR_PATH = 'C:\\Games\\World_of_Tanks_NA\\replays';
-const logger = getLogger();
-
-const readFileTransform = new Transform({
-  objectMode: true,
-  transform: (filePath: string, _encoding: BufferEncoding, callback) => {
-    readFile(filePath, (error, data) => {
-      if (error) {
-        logger.error(error, 'Error reading file', { fileName: filePath });
-        callback();
-      } else {
-        callback(null, { data, filePath });
-      }
-    });
-  },
-});
+const logger = getLogger({ name: 'main' });
 
 (async function main() {
   let fileNames: string[] = [];
@@ -31,14 +18,15 @@ const readFileTransform = new Transform({
   if (!fileNames.length) {
     logger.info('No files found in the directory');
     return;
-  } else {
-    logger.info(`Found ${fileNames.length} files in the replay directory (${DIR_PATH}).`)
   }
+  logger.info(`Found ${fileNames.length} files in the replay directory (${DIR_PATH}).`);
+
   const extractMetadata = new ExtractMetadataToNdjson();
   const writeStream = createWriteStream('dist/parsedReplays.json');
   Readable.from(fileNames.map((file) => `${DIR_PATH}\\${file}`))
-    .pipe(readFileTransform)
+    .pipe(readFileStream)
     .pipe(extractMetadata)
+    .pipe(jsonifyObjectStream)
     .pipe(writeStream)
     .on('error', (error) => logger.error(error, 'Error processing replay pipeline.'))
     .on('finish', () => logger.info('Finished processing replays.'));
