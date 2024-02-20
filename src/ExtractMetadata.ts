@@ -1,13 +1,13 @@
-import { Transform } from 'stream';
+import { Transform, TransformCallback } from 'stream';
 import { getLogger } from './Logger';
-import type { IGameData } from './types';
+import type { IGameMetadata } from './types';
 
 const logger = getLogger({ name: 'ExtractMetadata' });
 
 const INT_SIZE_32 = 4;
 const PRE_GAME_INFO_START_INDEX = 12;
 
-function extractReplayMetadata(data: Buffer, filePath: string): IGameData | null {
+function extractReplayMetadata(data: Buffer, filePath: string): IGameMetadata | null {
   if (!data.length) {
     logger.debug('skipping empty file');
     return null;
@@ -54,7 +54,7 @@ function extractReplayMetadata(data: Buffer, filePath: string): IGameData | null
   }
 }
 
-export class ExtractMetadataToNdjson extends Transform {
+export class ExtractMetadata extends Transform {
   constructor() {
     super({ objectMode: true });
   }
@@ -62,7 +62,7 @@ export class ExtractMetadataToNdjson extends Transform {
   override _transform(
     { data, filePath }: { data: Buffer; filePath: string },
     _encoding: BufferEncoding,
-    callback: () => void,
+    callback: TransformCallback,
   ) {
     try {
       const result = extractReplayMetadata(data, filePath);
@@ -71,7 +71,7 @@ export class ExtractMetadataToNdjson extends Transform {
       }
       callback();
     } catch (error) {
-      logger.error(`Error processing file ${filePath}:`, { error });
+      logger.error(error, `Error processing file ${filePath}:`);
       callback();
     }
   }
