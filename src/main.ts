@@ -23,7 +23,6 @@ const logger = getLogger('main');
   }
   logger.info(`Found ${fileNames.length} files in the replay directory (${DIR_PATH}).`);
 
-  // if limit argument is provided, only process the first n files
   const limit = process.argv[2] ? parseInt(process.argv[2], 10) : undefined;
   if (limit) {
     fileNames = fileNames.slice(0, limit);

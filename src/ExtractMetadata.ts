@@ -1,8 +1,8 @@
-import { Transform, TransformCallback } from 'stream';
+import { Transform, type TransformCallback } from 'stream';
 import { getLogger } from './Logger';
 import type { IGameMetadata } from './types';
 
-const logger = getLogger({ name: 'ExtractMetadata' });
+const logger = getLogger('ExtractMetadata');
 
 const INT_SIZE_32 = 4;
 const PRE_GAME_INFO_START_INDEX = 12;

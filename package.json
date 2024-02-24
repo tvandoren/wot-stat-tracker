@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js | pino-pretty -S",
     "dev": "set 'LOG_LEVEL=debug' && npm run build && node dist/index.js 1 | pino-pretty -S",
-    "build": "node build.js",
+    "build": "node build.js | pino-pretty",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
