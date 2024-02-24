@@ -19,7 +19,7 @@ const parsePreGame = (data: unknown) => {
   };
   const server = {
     name: getSafe<string>(data, 'serverName', 'string'),
-  }
+  };
   logger.info({ player, client, server }, 'Parsing preGame data');
   return data;
 };

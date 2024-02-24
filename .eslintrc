@@ -12,25 +12,9 @@
   "env": {
     "node": true,
     "es6": true,
-    "jest": true,
     "mocha": true
   },
   "globals": {
-    "it": true,
-    "expect": true,
-    "describe": true,
-    "jest": true,
-    "document": true,
-    "test": true,
-    "window": true,
-    "fetch": true,
-    "WebSocket": true,
-    "alert": true,
-    "TextDecoder": false,
-    "TextEncoder": false,
-    "mixpanel": false,
-    "atob": false,
-    "btoa": false,
     "BufferEncoding": "readonly"
   },
   "rules": {
