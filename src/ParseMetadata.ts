@@ -1,9 +1,9 @@
-import { Transform, TransformCallback } from 'stream';
+import { Transform } from 'stream';
 import type { IGameMetadata, Primitive } from './types';
 import { getSafe as getSafeBase } from './utils';
 import { getLogger } from './Logger';
 
-const logger = getLogger({ name: 'ParseMetadata', level: 'debug' });
+const logger = getLogger('ParseMetadata');
 function getSafe<T>(obj: unknown, path: string, expectedType: Primitive): T | undefined {
   return getSafeBase<T>(obj, path, expectedType, logger);
 }
@@ -33,10 +33,20 @@ export class ParseMetadata extends Transform {
   constructor() {
     super({ objectMode: true });
   }
-  override _transform({ preGame, postGame }: IGameMetadata, _encoding: BufferEncoding, callback: TransformCallback) {
-    callback(null, {
-      preGame: parsePreGame(preGame),
-      postGame: parsePostGame(postGame),
-    });
+  override _transform(
+    { preGame, postGame }: IGameMetadata,
+    _encoding: BufferEncoding,
+    callback: (error: Error | null, data?: IGameMetadata) => void,
+  ) {
+    try {
+      callback(null, {
+        preGame: parsePreGame(preGame),
+        postGame: parsePostGame(postGame),
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        callback(error);
+      }
+    }
   }
 }

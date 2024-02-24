@@ -217,6 +217,7 @@
         ]
       }
     ],
+    "@typescript-eslint/consistent-type-imports": 2,
     "@typescript-eslint/default-param-last": 1,
     "@typescript-eslint/dot-notation": 1,
     "@typescript-eslint/indent": 0,

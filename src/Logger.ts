@@ -1,3 +1,5 @@
 import pino from 'pino';
 
-export const getLogger = (options?: pino.LoggerOptions) => pino(options);
+const logLevel = process.env['LOG_LEVEL'] || 'info';
+
+export const getLogger = (name: string) => pino({ name, level: logLevel });

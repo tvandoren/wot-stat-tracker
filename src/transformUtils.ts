@@ -1,31 +1,44 @@
 import { Transform } from 'stream';
 import { readFile } from 'fs';
-import { getLogger } from './Logger';
+import type { Logger } from 'pino';
 
-const logger = getLogger({ name: 'transformUtils' });
-
-export const readFileStream = new Transform({
-  objectMode: true,
-  transform: (filePath: string, _encoding: BufferEncoding, callback) => {
+export class ReadFileStream extends Transform {
+  constructor(private logger: Logger) {
+    super({ objectMode: true });
+  }
+  override _transform(
+    filePath: string,
+    _encoding: BufferEncoding,
+    callback: (error?: Error | null, data?: { data: Buffer; filePath: string }) => void,
+  ) {
     readFile(filePath, (error, data) => {
       if (error) {
-        logger.error(error, 'Error reading file', { fileName: filePath });
+        this.logger.error(error, 'Error reading file from ReadFileStream transform', { fileName: filePath });
         callback();
       } else {
         callback(null, { data, filePath });
       }
     });
-  },
-});
+  }
+}
 
-export const jsonifyObjectStream = new Transform({
-  objectMode: true,
-  transform: (data: unknown, _encoding: BufferEncoding, callback) => {
+export class JsonifyObjectStream extends Transform {
+  constructor(
+    private logger: Logger,
+    private prettyPrint = false,
+  ) {
+    super({ objectMode: true });
+  }
+  override _transform(
+    data: unknown,
+    _encoding: BufferEncoding,
+    callback: (error?: Error | null, stringified?: string) => void,
+  ) {
     try {
-      callback(null, `${JSON.stringify(data)}\n`);
+      callback(null, `${this.prettyPrint ? JSON.stringify(data, null, 2) : JSON.stringify(data)}\n`);
     } catch (error) {
-      logger.error(error, 'Error stringifying object', { data });
+      this.logger.error(error, 'Error stringifying object in JsonifyObjectStream transform', { data });
       callback();
     }
-  },
-});
+  }
+}
