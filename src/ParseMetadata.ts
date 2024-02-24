@@ -1,9 +1,12 @@
 import { Transform, TransformCallback } from 'stream';
-import type { IGameMetadata } from './types';
-import { getSafe } from './utils';
+import type { IGameMetadata, Primitive } from './types';
+import { getSafe as getSafeBase } from './utils';
 import { getLogger } from './Logger';
 
-const logger = getLogger({ name: 'ParseMetadata' });
+const logger = getLogger({ name: 'ParseMetadata', level: 'debug' });
+function getSafe<T>(obj: unknown, path: string, expectedType: Primitive): T | undefined {
+  return getSafeBase<T>(obj, path, expectedType, logger);
+}
 
 const parsePreGame = (data: unknown) => {
   if (typeof data !== 'object') {
@@ -13,14 +16,12 @@ const parsePreGame = (data: unknown) => {
     vehicle: getSafe<string>(data, 'playerVehicle', 'string'),
     name: getSafe<string>(data, 'playerName', 'string'),
     id: getSafe<number>(data, 'playerID', 'number'),
-  };
-  const client = {
-    version: getSafe<string>(data, 'clientVersionFromExe', 'string'),
+    clientVersion: getSafe<string>(data, 'clientVersionFromExe', 'string'),
   };
   const server = {
     name: getSafe<string>(data, 'serverName', 'string'),
   };
-  logger.info({ player, client, server }, 'Parsing preGame data');
+  logger.info({ player, server }, 'Parsing preGame data');
   return data;
 };
 

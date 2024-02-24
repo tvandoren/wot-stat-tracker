@@ -11,9 +11,7 @@ export interface IPreGameInfo {
     vehicle?: string;
     name?: string;
     id?: number;
-  };
-  client: {
-    version?: string;
+    clientVersion?: string;
   };
   server: {
     name?: string;

@@ -5,6 +5,7 @@ import { getLogger } from './Logger';
 import { ExtractMetadata } from './ExtractMetadata';
 import { jsonifyObjectStream, readFileStream } from './transformUtils';
 import { ParseMetadata } from './ParseMetadata';
+import { pluralize } from './utils';
 
 const DIR_PATH = 'C:\\Games\\World_of_Tanks_NA\\replays';
 const logger = getLogger({ name: 'main' });
@@ -21,6 +22,15 @@ const logger = getLogger({ name: 'main' });
     return;
   }
   logger.info(`Found ${fileNames.length} files in the replay directory (${DIR_PATH}).`);
+
+  // if limit argument is provided, only process the first n files
+  if (process.argv.length > 2 && process.argv[2]) {
+    const limit = parseInt(process.argv[2], 10);
+    if (limit) {
+      fileNames = fileNames.slice(0, limit);
+      logger.info(`Limiting processing to the first ${limit} ${pluralize('file', limit)}.`);
+    }
+  }
 
   const extractMetadata = new ExtractMetadata();
   const parseMetadata = new ParseMetadata();
