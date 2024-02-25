@@ -45,6 +45,7 @@ function extractReplayMetadata(data: Buffer, filePath: string): IGameMetadata | 
 
   try {
     return {
+      filePath,
       preGame: JSON.parse(preGameInfo),
       postGame: gameInfo ? JSON.parse(gameInfo) : undefined,
     };

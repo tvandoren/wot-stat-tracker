@@ -2,21 +2,42 @@ export type Primitive = 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 
 
 // metadata directly extracted from replay
 export interface IGameMetadata {
+  filePath: string;
   preGame: unknown;
   postGame?: unknown;
 }
 
+export interface IPlayerInfo {
+  playerName: string | undefined;
+  teamID: number | undefined;
+  sessionID: string | undefined;
+  anonymizedName: string | undefined;
+  clan: string | undefined;
+  vehicleType: string | undefined;
+  vehicleMaxHealth: number | undefined;
+  isTeamKiller: boolean | undefined;
+  botDisplayStatus: string | undefined;
+}
+
+export interface ITeamInfo {
+  allies: IPlayerInfo[];
+  enemies: IPlayerInfo[];
+}
+
 export interface IPreGameInfo {
-  player: {
-    vehicle?: string;
-    name?: string;
-    id?: number;
-    clientVersion?: string;
+  playerName: string | undefined;
+  serverName: string | undefined;
+  regionCode: string | undefined;
+  clientVersion: string | undefined;
+  mapDisplayName: string | undefined;
+  mapName: string | undefined;
+  time: string | undefined;
+  gameplayID: string | undefined;
+  battleType: number | undefined; // not sure what this one is yet, but seems potentially useful to keep
+  vehicles: {
+    allies: IPlayerInfo[];
+    enemies: IPlayerInfo[];
   };
-  server: {
-    name?: string;
-  };
-  [key: string]: unknown;
 }
 
 export interface IPostGameInfo {

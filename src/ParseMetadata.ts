@@ -1,5 +1,5 @@
 import { Transform } from 'stream';
-import type { IGameMetadata, Primitive } from './types';
+import type { IGameMetadata, IPlayerInfo, IPreGameInfo, Primitive, IGameData, IPostGameInfo } from './types';
 import { getSafe as getSafeBase } from './utils';
 import { getLogger } from './Logger';
 
@@ -8,25 +8,84 @@ function getSafe<T>(obj: unknown, path: string, expectedType: Primitive): T | un
   return getSafeBase<T>(obj, path, expectedType, logger);
 }
 
-const parsePreGame = (data: unknown) => {
+const parsePreGame = (data: unknown, filePath: string): IPreGameInfo => {
   if (typeof data !== 'object') {
     throw new Error('Invalid preGame data');
   }
-  const player = {
-    vehicle: getSafe<string>(data, 'playerVehicle', 'string'),
-    name: getSafe<string>(data, 'playerName', 'string'),
-    id: getSafe<number>(data, 'playerID', 'number'),
+
+  const vehicles = getSafe<unknown>(data, 'vehicles', 'object');
+  const teams: { [key: string]: IPlayerInfo[] } = {};
+  if (!vehicles) {
+    logger.warn({ filePath }, 'No vehicles found in preGame data');
+  } else {
+    Object.values(vehicles).forEach((vehicle) => {
+      if (typeof vehicle !== 'object') {
+        logger.warn({ filePath }, 'Invalid vehicle data');
+        return;
+      }
+      const teamID: number = vehicle.team;
+      const vehicleInfo = {
+        playerName: vehicle.name,
+        teamID,
+        sessionID: vehicle.avatarSessionID,
+        anonymizedName: vehicle.fakeName === vehicle.name ? undefined : vehicle.fakeName,
+        clan: vehicle.clanAbbrev,
+        vehicleType: vehicle.vehicleType,
+        vehicleMaxHealth: vehicle.maxHealth,
+        isTeamKiller: vehicle.isTeamKiller,
+        botDisplayStatus: vehicle.botDisplayStatus,
+      };
+      const team = teams[teamID];
+      if (team) {
+        team.push(vehicleInfo);
+      } else {
+        teams[teamID] = [vehicleInfo];
+      }
+    });
+  }
+
+  const playerName = getSafe<string>(data, 'playerName', 'string');
+  let allies: IPlayerInfo[] = [];
+  let enemies: IPlayerInfo[] = [];
+  const [team1, team2, wtf] = Object.values(teams);
+  if (!team1 || !team2 || wtf) {
+    logger.warn({ filePath, teamKeys: Object.keys(teams) }, 'Invalid number of teams');
+  } else if (team1.some((player: IPlayerInfo) => player.playerName === playerName)) {
+    allies = team1;
+    enemies = team2;
+  } else if (team2.some((player: IPlayerInfo) => player.playerName === playerName)) {
+    allies = team2;
+    enemies = team1;
+  } else {
+    logger.warn(
+      {
+        filePath,
+        playerName,
+        playersByTeam: {
+          team1: team1.map((player) => player.playerName),
+          team2: team2.map((player) => player.playerName),
+        },
+      },
+      'Player name not found in teams',
+    );
+  }
+
+  return {
+    playerName,
+    serverName: getSafe<string>(data, 'serverName', 'string'),
+    regionCode: getSafe<string>(data, 'regionCode', 'string'),
     clientVersion: getSafe<string>(data, 'clientVersionFromExe', 'string'),
+    mapDisplayName: getSafe<string>(data, 'mapDisplayName', 'string'),
+    mapName: getSafe<string>(data, 'mapName', 'string'),
+    time: getSafe<string>(data, 'dateTime', 'string'),
+    gameplayID: getSafe<string>(data, 'gameplayID', 'string'),
+    battleType: getSafe<number>(data, 'battleType', 'number'),
+    vehicles: { allies, enemies },
   };
-  const server = {
-    name: getSafe<string>(data, 'serverName', 'string'),
-  };
-  logger.info({ player, server }, 'Parsing preGame data');
-  return data;
 };
 
 const parsePostGame = (data: unknown) => {
-  return data;
+  return data as IPostGameInfo;
 };
 
 export class ParseMetadata extends Transform {
@@ -34,13 +93,13 @@ export class ParseMetadata extends Transform {
     super({ objectMode: true });
   }
   override _transform(
-    { preGame, postGame }: IGameMetadata,
+    { preGame, postGame, filePath }: IGameMetadata,
     _encoding: BufferEncoding,
-    callback: (error: Error | null, data?: IGameMetadata) => void,
+    callback: (error: Error | null, data?: IGameData) => void,
   ) {
     try {
       callback(null, {
-        preGame: parsePreGame(preGame),
+        preGame: parsePreGame(preGame, filePath),
         postGame: parsePostGame(postGame),
       });
     } catch (error) {
