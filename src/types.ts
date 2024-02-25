@@ -8,20 +8,14 @@ export interface IGameMetadata {
 }
 
 export interface IPlayerInfo {
-  playerName: string | undefined;
+  listedName: string | undefined;
   teamID: number | undefined;
   sessionID: string | undefined;
-  anonymizedName: string | undefined;
   clan: string | undefined;
   vehicleType: string | undefined;
   vehicleMaxHealth: number | undefined;
   isTeamKiller: boolean | undefined;
   botDisplayStatus: string | undefined;
-}
-
-export interface ITeamInfo {
-  allies: IPlayerInfo[];
-  enemies: IPlayerInfo[];
 }
 
 export interface IPreGameInfo {

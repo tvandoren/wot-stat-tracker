@@ -25,10 +25,9 @@ const parsePreGame = (data: unknown, filePath: string): IPreGameInfo => {
       }
       const teamID: number = vehicle.team;
       const vehicleInfo = {
-        playerName: vehicle.name,
+        listedName: vehicle.name,
         teamID,
         sessionID: vehicle.avatarSessionID,
-        anonymizedName: vehicle.fakeName === vehicle.name ? undefined : vehicle.fakeName,
         clan: vehicle.clanAbbrev,
         vehicleType: vehicle.vehicleType,
         vehicleMaxHealth: vehicle.maxHealth,
@@ -50,10 +49,10 @@ const parsePreGame = (data: unknown, filePath: string): IPreGameInfo => {
   const [team1, team2, wtf] = Object.values(teams);
   if (!team1 || !team2 || wtf) {
     logger.warn({ filePath, teamKeys: Object.keys(teams) }, 'Invalid number of teams');
-  } else if (team1.some((player: IPlayerInfo) => player.playerName === playerName)) {
+  } else if (team1.some((player: IPlayerInfo) => player.listedName === playerName)) {
     allies = team1;
     enemies = team2;
-  } else if (team2.some((player: IPlayerInfo) => player.playerName === playerName)) {
+  } else if (team2.some((player: IPlayerInfo) => player.listedName === playerName)) {
     allies = team2;
     enemies = team1;
   } else {
@@ -62,8 +61,8 @@ const parsePreGame = (data: unknown, filePath: string): IPreGameInfo => {
         filePath,
         playerName,
         playersByTeam: {
-          team1: team1.map((player) => player.playerName),
-          team2: team2.map((player) => player.playerName),
+          team1: team1.map((player) => player.listedName),
+          team2: team2.map((player) => player.listedName),
         },
       },
       'Player name not found in teams',
