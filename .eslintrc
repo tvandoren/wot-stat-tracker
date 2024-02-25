@@ -223,7 +223,24 @@
     "@typescript-eslint/indent": 0,
     "@typescript-eslint/keyword-spacing": 0,
     "@typescript-eslint/lines-between-class-members": 0,
-    "@typescript-eslint/naming-convention": 1,
+    "@typescript-eslint/naming-convention": [
+      1,
+      {
+        "selector": ["typeAlias", "interface", "class"],
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "typeParameter",
+        "format": ["PascalCase"],
+        "prefix": ["T"]
+      },
+      {
+        "selector": "default",
+        "format": ["camelCase", "UPPER_CASE"],
+        "leadingUnderscore": "allow",
+        "trailingUnderscore": "forbid"
+      }
+    ],
     "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/no-loop-func": 1,
     "@typescript-eslint/no-non-null-asserted-optional-chain": 1,
