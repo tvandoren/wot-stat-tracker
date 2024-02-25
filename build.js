@@ -4,14 +4,14 @@ const pino = require('pino');
 const logger = pino({ name: 'build.js' });
 
 async function check() {
-  logger.info('Type-checking the project...');
+  logger.info('Checking for typescript compilation errors...');
   await new Promise((resolve, reject) => {
     exec('npx tsc --noEmit', (err, stdout, stderr) => {
       if (err) {
         logger.error(stderr || stdout);
         reject(new Error('Type-checking failed. Please fix the errors and try again.'));
       }
-      logger.info('Successfully type-checked the project.');
+      logger.info('No typescript errors found.');
       resolve();
     });
   });
