@@ -25,21 +25,6 @@ function extractReplayMetadata(data: Buffer, filePath: string): IGameMetadata | 
   const postGameInfoStartIndex = preGameInfoEndIndex + INT_SIZE_32;
   const postGameInfoEndIndex = postGameInfoStartIndex + postGameInfoLen;
 
-  logger.debug({
-    first12Bytes: {
-      raw: data.subarray(0, 12),
-      first: data.readUInt32LE(0),
-      second: data.readUInt32LE(4),
-      third: data.readUInt32LE(8),
-    },
-    serverInfoStartIndex: PRE_GAME_INFO_START_INDEX,
-    serverInfoLen: preGameInfoLen,
-    serverInfoEndIndex: preGameInfoEndIndex,
-    gameInfoLen: postGameInfoLen,
-    gameInfoStartIndex: postGameInfoStartIndex,
-    gameInfoEndIndex: postGameInfoEndIndex,
-  });
-
   const preGameInfo = data.toString('utf-8', PRE_GAME_INFO_START_INDEX, preGameInfoEndIndex);
   const gameInfo = hasPostGameInfo ? data.toString('utf-8', postGameInfoStartIndex, postGameInfoEndIndex) : undefined;
 
