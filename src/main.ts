@@ -7,6 +7,11 @@ import { JsonifyObjectStream, ReadFileStream } from './transformUtils';
 import { ParseMetadata } from './ParseMetadata';
 import { pluralize } from './utils';
 
+if (process.env['NODE_ENV'] === 'development') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-extraneous-dependencies
+  require('source-map-support').install(); // enable source maps for stack traces
+}
+
 const DIR_PATH = 'C:\\Games\\World_of_Tanks_NA\\replays';
 const logger = getLogger('main');
 

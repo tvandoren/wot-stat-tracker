@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js | pino-pretty -S",
-    "dev": "set 'LOG_LEVEL=debug' && npm run build && node dist/index.js 1 | pino-pretty -S",
+    "quick-dev": "export NODE_ENV=development && export LOG_LEVEL=debug; node build.js --no-check | pino-pretty && node dist/index.js 1 | pino-pretty -S",
+    "dev": "export NODE_ENV=development && export LOG_LEVEL=debug; node build.js | pino-pretty && node dist/index.js 1 | pino-pretty -S",
     "build": "node build.js | pino-pretty",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +26,7 @@
     "eslint-plugin-react": "^7.33.2",
     "pino-pretty": "^10.3.1",
     "prettier": "3.2.5",
+    "source-map-support": "^0.5.21",
     "typescript": "^5.3.3"
   },
   "dependencies": {
