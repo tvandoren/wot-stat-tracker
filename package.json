@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js | pino-pretty -S",
-    "quick-dev": "export NODE_ENV=development && export LOG_LEVEL=debug; node build.js --no-check | pino-pretty && node dist/index.js 1 | pino-pretty -S",
-    "dev": "export NODE_ENV=development && export LOG_LEVEL=debug; node build.js | pino-pretty && node dist/index.js 1 | pino-pretty -S",
+    "quick-dev": "export NODE_ENV=development && export LOG_LEVEL=debug; node build.js --no-check | pino-pretty && node dist/index.js 1 | pino-pretty",
+    "dev": "export NODE_ENV=development && export LOG_LEVEL=debug; node build.js | pino-pretty && node dist/index.js 1 | pino-pretty",
     "build": "node build.js | pino-pretty",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -30,6 +30,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "ajv": "^8.12.0",
     "pino": "^8.19.0"
   }
 }
