@@ -4,6 +4,8 @@
     "outDir": "dist",
     "target": "es2022",
     "moduleResolution": "node",
+    "exactOptionalPropertyTypes": false,
+    "useUnknownInCatchVariables": false,
     "noPropertyAccessFromIndexSignature": false
   },
   "include": ["src/**/*"]

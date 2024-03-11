@@ -226,7 +226,7 @@
     "@typescript-eslint/naming-convention": [
       1,
       {
-        "selector": ["typeAlias", "interface", "class"],
+        "selector": ["typeAlias", "interface", "class", "enum"],
         "format": ["PascalCase"]
       },
       {

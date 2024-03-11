@@ -1,5 +1,5 @@
 import type { JSONSchemaType } from 'ajv';
-import type { IPreGameInfo } from '../types';
+import type { IPreGameData } from '../types';
 import { getLogger } from '../utils/Logger';
 import { isValid } from '../utils/Ajv';
 
@@ -7,7 +7,7 @@ const logger = getLogger('ExtractPreGame');
 
 // there's limited data that we care about from pregame data, since almost all of the interesting stuff is in the post game results
 // what we do care about is server type info that isn't listed later
-const preGameSchema: JSONSchemaType<IPreGameInfo> = {
+const preGameSchema: JSONSchemaType<IPreGameData> = {
   type: 'object',
   properties: {
     serverName: { type: 'string' },
@@ -23,18 +23,19 @@ const preGameSchema: JSONSchemaType<IPreGameInfo> = {
     mapName: { type: 'string' },
     gameplayID: { type: 'string' },
     battleType: { type: 'integer' },
+    uploaderDBID: { type: 'integer' },
   },
   required: ['serverName', 'regionCode', 'mapName', 'gameplayID'],
   additionalProperties: false,
 };
 
-export function getPreGameData(preGame: any, filePath: string): IPreGameInfo | null {
+export function getPreGameData(preGame: any, filePath: string): IPreGameData | null {
   if (!preGame || typeof preGame !== 'object') {
     logger.error({ filePath, typeFound: typeof preGame }, 'Pregame data is not an object');
     return null;
   }
 
-  const data: Record<keyof IPreGameInfo, unknown> = {
+  const data = {
     serverName: preGame.serverName,
     regionCode: preGame.regionCode,
     clientVersions: {
@@ -44,9 +45,10 @@ export function getPreGameData(preGame: any, filePath: string): IPreGameInfo | n
     mapName: preGame.mapName,
     gameplayID: preGame.gameplayID,
     battleType: preGame.battleType,
+    uploaderDBID: preGame.playerID,
   };
 
-  if (!isValid<IPreGameInfo>(preGameSchema, data, logger)) {
+  if (!isValid<IPreGameData>(preGameSchema, data, logger)) {
     return null;
   }
 

@@ -1,14 +1,7 @@
 export type Primitive = 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function';
 
-export const expectedGeneralInfoKeys = [
-  'personal',
-  'players',
-  'vehicles',
-  'common',
-  'arenaUniqueID',
-  'avatars',
-] as const;
-export type GeneralInfoKey = (typeof expectedGeneralInfoKeys)[number];
+const expectedGeneralInfoKeys = ['personal', 'players', 'vehicles', 'common', 'arenaUniqueID', 'avatars'] as const;
+type GeneralInfoKey = (typeof expectedGeneralInfoKeys)[number];
 export type IGeneralInfo = {
   [K in GeneralInfoKey]: K extends 'arenaUniqueID' ? number : Record<string, Record<string, unknown>>;
 };
@@ -24,105 +17,122 @@ export interface IGameMetadata {
   postGame?: IPostGameMetadata;
 }
 
-// metadata after cleaning
-export interface IGameData {
-  playerResults?: unknown;
-  gameResults?: IPreGameInfo & IPostGameInfo;
-}
-
-export interface IPlayerResult {
-  accountInfo: {
-    accountDBID: number;
-    clanDBID: number;
-  };
-  overview: {
-    vehicle: string;
-    xp: number;
-    xpPosition: number;
-    freeXP: number;
+export interface IIndividualResult {
+  economic: {
     credits: number;
-    totalDamaged: number;
+    xp: number;
   };
-  details: {
-    spottingDamage?: number;
-    trackingDamage?: number;
-    stunned?: number;
-    stunDuration?: number;
-    piggyBank?: number;
-    winAloneAgainstVehicleCount?: number;
-    damagedWhileMoving?: number;
+  combat: {
+    damaged: number;
+    damageDealt: number;
     kills?: number;
-    percentFromTotalTeamDamage?: number;
-    markOfMastery?: number;
-    noDamageDirectHitsReceived?: number;
-    originalTMenXP?: number;
-    movingAvgDamage?: number;
-    shots?: number;
-    deathCount?: number;
-    stunNum?: number;
-    spotted?: number;
-    killerID?: number;
-    damagedHp?: number;
+    directHits: number;
     directEnemyHits?: number;
-    damageReceived?: number;
-    health?: number;
-    mileage?: number;
-    achievements?: number[]; // Assuming this is correct based on items type
-    isFirstBlood?: boolean;
-    resourceAbsorbed?: number;
-    committedSuicide?: boolean;
-    potentialDamageReceived?: number;
-    damageDealt?: number;
-    marksOnGun?: number;
-    directHits?: number;
-    repair?: number;
-    originalCredits?: number;
-    sniperDamageDealt?: number;
-    damageBlockedByArmor?: number;
-    damageReceivedFromInvisibles?: number;
-    flagActions?: number[]; // Assuming this is correct based on items type
-    maxHealth?: number;
     directTeamHits?: number;
-    piercings?: number;
-    killsBeforeTeamWasDamaged?: number;
-    lifeTime?: number;
-    piercingsReceived?: number;
-    percentFromSecondBestDamage?: number;
-    piercingEnemyHits?: number;
-    deathReason?: number;
-    capturePoints?: number;
-    damageBeforeTeamWasDamaged?: number;
-    explosionHitsReceived?: number;
+    explosionHits: number;
     isTeamKiller?: boolean;
-    prevMarkOfMastery?: number;
+    killerID?: number;
+    piercingEnemyHits?: number;
+    piercings?: number;
+    shots?: number;
+    sniperDamageDealt?: number;
+    stunDuration?: number;
+    stunned?: number;
+    stunNum?: number;
   };
-  byEnemyVehicle: IResultsByEnemyVehicle;
+  assistance: {
+    damageAssistedRadio: number;
+    damageAssistedStun: number;
+    damageAssistedTrack: number;
+    damageAssistedInspire?: number;
+    spotted?: number;
+  };
+  survivability: {
+    damageBlockedByArmor: number;
+    damageReceived: number;
+    damageReceivedFromInvisibles: number;
+    deathCount?: number;
+    deathReason?: number;
+    directHitsReceived?: number;
+    explosionHitsReceived?: number;
+    health?: number;
+    isFirstBlood?: boolean;
+    lifeTime?: number;
+    maxHealth?: number;
+    noDamageDirectHitsReceived?: number;
+    piercingsReceived?: number;
+    potentialDamageReceived?: number;
+  };
+  misc: {
+    achievements?: number[];
+    capturePoints?: number;
+    droppedCapturePoints?: number;
+    flagActions?: number[];
+    flagCapture?: number;
+    marksOnGun?: number;
+    mileage?: number;
+    resourceAbsorbed?: number;
+    sessionID: string;
+    team: number;
+  };
 }
 
-export type IResultsByEnemyVehicle = Array<{
-  accountDBID: number;
-  spotted?: number;
-  crits?: number; // TODO: figure out what the number here actually means
-  damageAssistedRadio?: number; // TODO: rename these for consistency
-  damageAssistedTrack?: number;
-  damageAssistedStun?: number;
-  fire?: number; // TODO: rename maybe? Damage done by fire
-  piercings?: number;
-  directEnemyHits?: number;
-  damageDealt?: number;
-  piercingEnemyHits?: number; // TODO: how does this differ from piercings?
-  rickochetsReceived?: number; // TODO: correct typo here
-  stunDuration?: number; // TODO: figure out if this is useful
-  damageReceived?: number; // TODO: damage received from this player?
-  explosionHits?: number; // TODO: HE shell damage?
-  damageBlockedByArmor?: number;
-  noDamageDirectHitsReceived?: number;
-  targetKills?: number; // TODO: rename to kills?
-  stunNum?: number; // TODO: verify what this actually tracks
-  directHits?: number;
-}>;
+export interface IUploaderExtras {
+  personal: {
+    committedSuicide?: boolean;
+    damageBeforeTeamWasDamaged?: number;
+    damagedWhileEnemyMoving?: number;
+    damagedWhileMoving?: number;
+    killsBeforeTeamWasDamaged?: number;
+    markOfMastery?: number;
+    movingAvgDamage?: number;
+    percentFromSecondBestDamage?: number;
+    percentFromTotalTeamDamage?: number;
+    prevMarkOfMastery?: number;
+    repair?: number;
+    winAloneAgainstVehicleCount?: number;
+  };
+}
 
-export interface IPreGameInfo {
+export interface IBasePlayerInfo {
+  vehicleType: string;
+  team: number;
+  realName: string;
+  fakeName: string;
+  sessionID: string;
+  clanDBID?: number;
+}
+
+export interface IPlayerInfo extends IBasePlayerInfo {
+  battleResult?: IIndividualResult;
+}
+
+export interface IResultByEnemyVehicle {
+  dbid: number;
+  critsInflicted?: number;
+  directHits?: number;
+  explosionHits?: number;
+  fireDamage?: number;
+  gotKill: boolean;
+  piercingHits?: number;
+  stunCount?: number;
+  totalDamageDealt?: number;
+  totalStunDuration?: number;
+  damageAssistedRadio?: number;
+  damageAssistedStun?: number;
+  damageAssistedTrack?: number;
+  gotInitialSpot?: boolean;
+  damageBlockedByArmor?: number;
+  ricochetsReceived?: number;
+  noDamageDirectHitsReceived?: number;
+}
+
+export interface IUploaderInfo extends IBasePlayerInfo {
+  battleResult: IIndividualResult & IUploaderExtras;
+  byEnemyVehicle: IResultByEnemyVehicle[];
+}
+
+export interface IPreGameData {
   serverName: string;
   regionCode: string;
   clientVersions: {
@@ -132,25 +142,19 @@ export interface IPreGameInfo {
   mapName: string;
   gameplayID: string;
   battleType: number; // not sure what this one is yet, but seems potentially useful to keep
+  uploaderDBID: number;
 }
 
-export interface IPlayerInfo {
-  listedName: string | undefined;
-  teamID: number | undefined;
-  vehicleSessionID: string | undefined;
-  clan: string | undefined;
-  vehicleType: string | undefined;
-  vehicleMaxHealth: number | undefined;
-  isTeamKiller: boolean | undefined;
-  botDisplayStatus: string | undefined;
-}
-
-export interface IPersonalResult {
-  xp: number | undefined;
-  isPrematureLeave: boolean | undefined;
-  [key: string]: unknown;
-}
-
-export interface IPostGameInfo {
-  [key: string]: unknown;
+// metadata after cleaning
+export interface IGameData extends IPreGameData {
+  arenaUniqueID: number;
+  finishReason: number;
+  arenaCreateTime: number;
+  winningTeam: number;
+  teamHealth: {
+    [key: string]: number;
+  };
+  arenaTypeID: number;
+  duration: number; // seconds?
+  playerInfo: (IPlayerInfo & { dbid: string })[];
 }
