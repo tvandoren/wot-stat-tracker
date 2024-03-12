@@ -89,12 +89,14 @@ export class GameDataExtractor extends Transform {
       callback();
       return;
     }
-    const dbidBySessionID = new Map<string, number>();
+    const dbidBySessionID = new Map<string, { dbid: number; vehicleType: string }>();
     Object.keys(generalInfo.vehicles).forEach((avatarId) => {
-      const vehicleData = generalInfo.vehicles[avatarId]?.[0] as Record<string, unknown>;
-      const dbid = vehicleData?.accountDBID as number;
-      if (dbid) {
-        dbidBySessionID.set(avatarId, dbid);
+      const dbid = (generalInfo.vehicles[avatarId]?.[0] as Record<string, unknown>)?.accountDBID;
+      const vehicleType = (playerInfo[avatarId] as Record<string, unknown>)?.vehicleType;
+      if (dbid && vehicleType && typeof dbid === 'number' && typeof vehicleType === 'string') {
+        dbidBySessionID.set(avatarId, { dbid, vehicleType });
+      } else {
+        logger.warn({ avatarId, dbid, vehicleType }, 'Creating data map for player failed');
       }
     });
 
@@ -109,7 +111,7 @@ export class GameDataExtractor extends Transform {
         const fullPlayerResult: IPersonalResultData = {
           ...parsedPreGame,
           ...playerResult,
-        }
+        };
         this.personalResultWriteStream.write(
           this.prettyPrint ? `${JSON.stringify(fullPlayerResult, null, 2)}\n` : `${JSON.stringify(fullPlayerResult)}\n`,
         );

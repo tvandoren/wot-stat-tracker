@@ -54,7 +54,9 @@ const enemyVehicleSchema: JSONSchemaType<IUnstructuredResult> = {
   additionalProperties: false, // TODO: switch to false when removing additional properties
 };
 
-function structureEnemyInteraction(unstructured: IUnstructuredResult): Omit<IResultByEnemyVehicle, 'dbid'> {
+function structureEnemyInteraction(
+  unstructured: IUnstructuredResult,
+): Omit<IResultByEnemyVehicle, 'dbid' | 'vehicleType'> {
   return {
     critsInflicted: unstructured.crits, // TODO: figure out how to turn this into useable data
     directHits: unstructured.directHits,
@@ -78,7 +80,7 @@ function structureEnemyInteraction(unstructured: IUnstructuredResult): Omit<IRes
 export function getPlayerResult(
   personal: any,
   baseInfo: IBasePlayerInfo,
-  dbidBySessionID: Map<string, number>,
+  dbidBySessionID: Map<string, { dbid: number; vehicleType: string }>,
   filePath: string,
 ): IUploaderInfo | undefined {
   if (!personal || typeof personal !== 'object') {
@@ -109,18 +111,21 @@ export function getPlayerResult(
   const byEnemyVehicle: IResultByEnemyVehicle[] = [];
   Object.keys(personalResults.details).forEach((malformedId) => {
     const enemySessionID = malformedId.match(/\d+/)?.[0];
-    const dbid = enemySessionID && dbidBySessionID.get(enemySessionID);
+    const { dbid, vehicleType } = (enemySessionID && dbidBySessionID.get(enemySessionID)) || {};
     const unstructured = structuredClone(personalResults.details[malformedId]);
     const isValid = validateAndRemoveAdditionalProperties<IUnstructuredResult>(
       enemyVehicleSchema,
       unstructured,
       logger,
     );
-    if (dbid && isValid) {
+    if (dbid && vehicleType && isValid) {
       byEnemyVehicle.push({
         dbid,
+        vehicleType,
         ...structureEnemyInteraction(unstructured),
       });
+    } else if (!dbid || !vehicleType) {
+      logger.warn({ enemySessionID, dbid, vehicleType }, 'No dbid or vehicleType found for enemy vehicle');
     }
   });
   const battleResult = getUploaderResult({ ...personalResults, sessionID: baseInfo.sessionID }, logger);

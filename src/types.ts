@@ -109,6 +109,7 @@ export interface IPlayerInfo extends IBasePlayerInfo {
 
 export interface IResultByEnemyVehicle {
   dbid: number;
+  vehicleType: string;
   critsInflicted?: number;
   directHits?: number;
   explosionHits?: number;
