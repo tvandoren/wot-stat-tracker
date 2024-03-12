@@ -1,9 +1,9 @@
 import type { JSONSchemaType } from 'ajv';
 import { Transform } from 'stream';
 import type { WriteStream } from 'fs';
-import type { IGameData, IGameMetadata } from '../types';
+import type { IGameData, IGameMetadata, IPersonalResultData } from '../types';
 import { ReplayExtractor } from './FromReplay';
-import { getPreGameData } from './PreGame';
+import { getPreGameData, preGameSchema } from './PreGame';
 import { getLogger } from '../utils/Logger';
 import { getPlayerResult } from './UploaderInfo';
 import { getPlayersByDBID } from './Players';
@@ -17,20 +17,7 @@ export const replayExtractor = new ReplayExtractor();
 const gameDataSchema: JSONSchemaType<Omit<IGameData, 'playerInfo'>> = {
   type: 'object',
   properties: {
-    serverName: { type: 'string' },
-    regionCode: { type: 'string' },
-    clientVersions: {
-      type: 'object',
-      properties: {
-        fromExe: { type: 'string', nullable: true },
-        fromXml: { type: 'string', nullable: true },
-      },
-      additionalProperties: false,
-    },
-    mapName: { type: 'string' },
-    gameplayID: { type: 'string' },
-    battleType: { type: 'integer' },
-    uploaderDBID: { type: 'integer' },
+    ...preGameSchema.properties,
     arenaUniqueID: { type: 'integer' },
     finishReason: { type: 'integer' },
     arenaCreateTime: { type: 'integer' },
@@ -42,6 +29,7 @@ const gameDataSchema: JSONSchemaType<Omit<IGameData, 'playerInfo'>> = {
     duration: { type: 'integer' },
   },
   required: [
+    ...preGameSchema.required,
     'arenaUniqueID',
     'finishReason',
     'arenaCreateTime',
@@ -118,8 +106,12 @@ export class GameDataExtractor extends Transform {
       // flesh out and spin off to save separately
       const playerResult = getPlayerResult(generalInfo.personal, baseInfo, dbidBySessionID, filePath);
       if (playerResult) {
+        const fullPlayerResult: IPersonalResultData = {
+          ...parsedPreGame,
+          ...playerResult,
+        }
         this.personalResultWriteStream.write(
-          this.prettyPrint ? `${JSON.stringify(playerResult, null, 2)}\n` : `${JSON.stringify(playerResult)}\n`,
+          this.prettyPrint ? `${JSON.stringify(fullPlayerResult, null, 2)}\n` : `${JSON.stringify(fullPlayerResult)}\n`,
         );
       }
     }

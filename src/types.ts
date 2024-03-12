@@ -127,11 +127,6 @@ export interface IResultByEnemyVehicle {
   noDamageDirectHitsReceived?: number;
 }
 
-export interface IUploaderInfo extends IBasePlayerInfo {
-  battleResult: IIndividualResult & IUploaderExtras;
-  byEnemyVehicle: IResultByEnemyVehicle[];
-}
-
 export interface IPreGameData {
   serverName: string;
   regionCode: string;
@@ -140,10 +135,18 @@ export interface IPreGameData {
     fromXml?: string;
   };
   mapName: string;
+  mapDisplayName: string;
   gameplayID: string;
   battleType: number; // not sure what this one is yet, but seems potentially useful to keep
   uploaderDBID: number;
 }
+
+export interface IUploaderInfo extends IBasePlayerInfo {
+  battleResult: IIndividualResult & IUploaderExtras;
+  byEnemyVehicle: IResultByEnemyVehicle[];
+}
+
+export interface IPersonalResultData extends IUploaderInfo, IPreGameData {}
 
 // metadata after cleaning
 export interface IGameData extends IPreGameData {

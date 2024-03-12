@@ -7,7 +7,7 @@ const logger = getLogger('ExtractPreGame');
 
 // there's limited data that we care about from pregame data, since almost all of the interesting stuff is in the post game results
 // what we do care about is server type info that isn't listed later
-const preGameSchema: JSONSchemaType<IPreGameData> = {
+export const preGameSchema: JSONSchemaType<IPreGameData> = {
   type: 'object',
   properties: {
     serverName: { type: 'string' },
@@ -21,11 +21,12 @@ const preGameSchema: JSONSchemaType<IPreGameData> = {
       additionalProperties: false,
     },
     mapName: { type: 'string' },
+    mapDisplayName: { type: 'string' },
     gameplayID: { type: 'string' },
     battleType: { type: 'integer' },
     uploaderDBID: { type: 'integer' },
   },
-  required: ['serverName', 'regionCode', 'mapName', 'gameplayID'],
+  required: ['serverName', 'regionCode', 'mapName', 'mapDisplayName', 'gameplayID'],
   additionalProperties: false,
 };
 
@@ -43,6 +44,7 @@ export function getPreGameData(preGame: any, filePath: string): IPreGameData | n
       fromXml: preGame.clientVersionFromXml,
     },
     mapName: preGame.mapName,
+    mapDisplayName: preGame.mapDisplayName,
     gameplayID: preGame.gameplayID,
     battleType: preGame.battleType,
     uploaderDBID: preGame.playerID,
