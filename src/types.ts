@@ -138,7 +138,8 @@ export interface IPreGameData {
   mapName: string;
   mapDisplayName: string;
   gameplayID: string;
-  battleType: number; // not sure what this one is yet, but seems potentially useful to keep
+  battleTypeCode: number;
+  battleType?: string;
   uploaderDBID: number;
 }
 

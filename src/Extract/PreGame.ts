@@ -2,6 +2,7 @@ import type { JSONSchemaType } from 'ajv';
 import type { IPreGameData } from '../types';
 import { getLogger } from '../utils/Logger';
 import { isValid } from '../utils/Ajv';
+import { battleTypeNames } from '../utils/constants';
 
 const logger = getLogger('ExtractPreGame');
 
@@ -23,7 +24,8 @@ export const preGameSchema: JSONSchemaType<IPreGameData> = {
     mapName: { type: 'string' },
     mapDisplayName: { type: 'string' },
     gameplayID: { type: 'string' },
-    battleType: { type: 'integer' },
+    battleTypeCode: { type: 'integer' },
+    battleType: { type: 'string', nullable: true },
     uploaderDBID: { type: 'integer' },
   },
   required: ['serverName', 'regionCode', 'mapName', 'mapDisplayName', 'gameplayID'],
@@ -46,7 +48,8 @@ export function getPreGameData(preGame: any, filePath: string): IPreGameData | n
     mapName: preGame.mapName,
     mapDisplayName: preGame.mapDisplayName,
     gameplayID: preGame.gameplayID,
-    battleType: preGame.battleType,
+    battleTypeCode: preGame.battleType,
+    battleType: battleTypeNames.get(preGame.battleType) ?? undefined,
     uploaderDBID: preGame.playerID,
   };
 

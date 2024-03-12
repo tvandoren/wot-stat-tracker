@@ -66,13 +66,13 @@ export class GameDataExtractor extends Transform {
       return;
     }
     const parsedPreGame = getPreGameData(preGame, filePath);
-    if (parsedPreGame?.battleType === BattleTypes.TRAINING) {
+    if (parsedPreGame?.battleTypeCode === BattleTypes.TRAINING) {
       // don't care about training battles for stats
       callback();
       return;
     }
-    if (parsedPreGame?.battleType && !battleTypeNames.get(parsedPreGame.battleType)) {
-      this.unknownBattleTypes.add(parsedPreGame.battleType);
+    if (parsedPreGame?.battleType && !battleTypeNames.get(parsedPreGame.battleTypeCode)) {
+      this.unknownBattleTypes.add(parsedPreGame.battleTypeCode);
     }
     const generalInfo = postGame[0];
     const playerInfo = postGame[1] as Record<string, unknown>;
