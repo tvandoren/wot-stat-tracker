@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 import type { IBasePlayerInfo, IResultByEnemyVehicle, IUploaderInfo } from '../types';
 import { getLogger } from '../utils/Logger';
-import { validateAndRemoveAdditionalProperties } from '../utils/Ajv';
+import { validate } from '../utils/Ajv';
 import { getUploaderResult } from './IndividualResult';
 
 const logger = getLogger('ExtractPlayerResult');
@@ -113,12 +113,7 @@ export function getPlayerResult(
     const enemySessionID = malformedId.match(/\d+/)?.[0];
     const { dbid, vehicleType } = (enemySessionID && dbidBySessionID.get(enemySessionID)) || {};
     const unstructured = structuredClone(personalResults.details[malformedId]);
-    const isValid = validateAndRemoveAdditionalProperties<IUnstructuredResult>(
-      enemyVehicleSchema,
-      unstructured,
-      logger,
-    );
-    if (dbid && vehicleType && isValid) {
+    if (dbid && vehicleType && validate<IUnstructuredResult>(enemyVehicleSchema, unstructured, logger, true)) {
       byEnemyVehicle.push({
         dbid,
         vehicleType,

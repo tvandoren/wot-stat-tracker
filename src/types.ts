@@ -1,5 +1,3 @@
-export type Primitive = 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function';
-
 const expectedGeneralInfoKeys = ['personal', 'players', 'vehicles', 'common', 'arenaUniqueID', 'avatars'] as const;
 type GeneralInfoKey = (typeof expectedGeneralInfoKeys)[number];
 export type IGeneralInfo = {

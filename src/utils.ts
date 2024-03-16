@@ -1,29 +1,13 @@
-import type { Logger } from 'pino';
-import type { Primitive } from './types';
+export function generateRandomCharacters(length: number): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
 
-export function getSafe<T>(obj: unknown, path: string, expectedType: Primitive, logger?: Logger): T | undefined {
-  const pathParts = path.split('.');
-  let current = obj;
-  for (const part of pathParts) {
-    if (current === null || current === undefined) {
-      logger?.debug({ path, current }, 'Failed on path segement - null or undefined');
-      return undefined;
-    }
-    if (Object.prototype.hasOwnProperty.call(current, part)) {
-      current = current[part as keyof typeof current];
-    } else {
-      logger?.debug({ path, current }, 'Failed on path segement - property does not exist');
-      return undefined;
-    }
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
   }
-  if (typeof current !== expectedType) {
-    logger?.debug(
-      { path, current, expectedType, actualType: typeof current },
-      'Failed on path segement - actual type does not match expected',
-    );
-    return undefined;
-  }
-  return current as T;
+
+  return result;
 }
 
 export function pluralize(word: string, count: number): string {

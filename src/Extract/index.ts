@@ -7,7 +7,7 @@ import { getPreGameData, preGameSchema } from './PreGame';
 import { getLogger } from '../utils/Logger';
 import { getPlayerResult } from './UploaderInfo';
 import { getPlayersByDBID } from './Players';
-import { isValid } from '../utils/Ajv';
+import { validate } from '../utils/Ajv';
 import { BattleTypes, battleTypeNames } from '../utils/constants';
 
 const logger = getLogger('ExtractGameData');
@@ -129,7 +129,7 @@ export class GameDataExtractor extends Transform {
       duration: generalInfo.common.duration,
     };
     const parsedPlayerInfo = Object.entries(resultsByPlayer).map(([dbid, result]) => ({ ...result, dbid }));
-    if (isValid<IGameData>(gameDataSchema, commonGameInfo, logger)) {
+    if (validate<IGameData>(gameDataSchema, commonGameInfo, logger)) {
       callback(null, { ...commonGameInfo, playerInfo: parsedPlayerInfo });
     } else {
       logger.warn({ filePath }, 'No data extracted from file');

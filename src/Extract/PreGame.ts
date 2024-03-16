@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 import type { IPreGameData } from '../types';
 import { getLogger } from '../utils/Logger';
-import { isValid } from '../utils/Ajv';
+import { validate } from '../utils/Ajv';
 import { battleTypeNames } from '../utils/constants';
 
 const logger = getLogger('ExtractPreGame');
@@ -53,7 +53,7 @@ export function getPreGameData(preGame: any, filePath: string): IPreGameData | n
     uploaderDBID: preGame.playerID,
   };
 
-  if (!isValid<IPreGameData>(preGameSchema, data, logger)) {
+  if (!validate<IPreGameData>(preGameSchema, data, logger)) {
     return null;
   }
 

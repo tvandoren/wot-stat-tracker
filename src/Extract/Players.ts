@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 import type { IBasePlayerInfo, IPlayerInfo, IGeneralInfo } from '../types';
 import { getLogger } from '../utils/Logger';
-import { validateAndRemoveAdditionalProperties } from '../utils/Ajv';
+import { validate } from '../utils/Ajv';
 import { getIndividualResult } from './IndividualResult';
 
 const logger = getLogger('ExtractPlayers');
@@ -37,7 +37,7 @@ export const getPlayersByDBID = (
       ...players[dbid],
       sessionID,
     };
-    if (!validateAndRemoveAdditionalProperties<IBasePlayerInfo>(playerSchema, baseInfo, logger)) {
+    if (!validate<IBasePlayerInfo>(playerSchema, baseInfo, logger, true)) {
       // logging covered in validate function
       return acc;
     }

@@ -1,6 +1,6 @@
 import type { Logger } from 'pino';
 import type { JSONSchemaType } from 'ajv';
-import { validateAndRemoveAdditionalProperties } from '../utils/Ajv';
+import { validate } from '../utils/Ajv';
 import type { IIndividualResult, IUploaderExtras } from '../types';
 
 // TODO - maybe interesting?
@@ -235,7 +235,7 @@ function convertToStructuredResult(
 export const getIndividualResult = (data: unknown, logger: Logger): IIndividualResult | undefined => {
   // don't break original data
   const unstructured = structuredClone(data);
-  if (validateAndRemoveAdditionalProperties<IUnstructuredResult>(playerResultSchema, unstructured, logger)) {
+  if (validate<IUnstructuredResult>(playerResultSchema, unstructured, logger, true)) {
     return convertToStructuredResult(unstructured) as IIndividualResult;
   }
   return undefined;
@@ -244,7 +244,7 @@ export const getIndividualResult = (data: unknown, logger: Logger): IIndividualR
 export const getUploaderResult = (data: unknown, logger: Logger): (IIndividualResult & IUploaderExtras) | undefined => {
   // don't break original data
   const unstructured = structuredClone(data);
-  if (validateAndRemoveAdditionalProperties<IUnstructuredResult>(playerResultSchema, unstructured, logger)) {
+  if (validate<IUnstructuredResult>(playerResultSchema, unstructured, logger, true)) {
     return convertToStructuredResult(unstructured, true) as IIndividualResult & IUploaderExtras;
   }
   return undefined;
