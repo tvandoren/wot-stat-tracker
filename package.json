@@ -11,8 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Trevor VanDoren",
+  "license": "MIT",
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.3",
     "@types/node": "^20.11.19",
