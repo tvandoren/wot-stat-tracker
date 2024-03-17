@@ -1,7 +1,8 @@
 # WoT Stat Tracker
 
 ## Description
-WoT Stat Tracker is a Node.js application designed to process and analyze World of Tanks replay files. It extracts valuable game data from replay files located in a specified directory, transforms this data into a more readable format, and saves the results for further analysis. In the future, there are plans to support analysis of replays within the application. At the moment the replay output would need to be analyzed by another tool (e.g., uploaded to [S3](https://aws.amazon.com/s3/) and analyzed by [Cribl Search](https://cribl.io/search/))
+WoT Stat Tracker is a Node.js application designed to process and analyze World of Tanks replay files. It extracts valuable game data from replay files located in a specified directory, transforms this data into a more readable format, and saves the results for further analysis. In the future, there are plans to support analysis of replays within the application. At the moment the replay output would need to be analyzed by another tool, e.g., uploaded to [S3](https://aws.amazon.com/s3/) and analyzed by [Cribl Search](https://cribl.io/search/):
+![example Search result](assets/example_search.png)
 
 ## Prerequisites
 Before you begin, ensure your machine has met the following requirements:
