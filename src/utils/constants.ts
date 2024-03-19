@@ -1,4 +1,4 @@
-export enum BattleTypes {
+export enum BattleType {
   STANDARD = 1,
   TRAINING = 2,
   ADVANCE = 21,
@@ -7,9 +7,9 @@ export enum BattleTypes {
 }
 
 export const battleTypeNames = new Map<number, string>([
-  [BattleTypes.STANDARD, 'Standard'],
-  [BattleTypes.TRAINING, 'Training'],
-  [BattleTypes.ADVANCE, 'Advance'],
-  [BattleTypes.FRONTLINE, 'Frontline'],
-  [BattleTypes.ONSLAUGHT, 'Onslaught'],
+  [BattleType.STANDARD, 'Standard'],
+  [BattleType.TRAINING, 'Training'],
+  [BattleType.ADVANCE, 'Advance'],
+  [BattleType.FRONTLINE, 'Frontline'],
+  [BattleType.ONSLAUGHT, 'Onslaught'],
 ]);

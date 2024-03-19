@@ -3,9 +3,10 @@ import { createWriteStream } from 'fs';
 import { Readable, PassThrough } from 'stream';
 import path from 'path';
 import { getLogger } from './utils/Logger';
-import { JsonifyObjectStream, ReadFileStream } from './utils/Transform';
+import { ReadFileStream } from './utils/Transform';
 import { generateRandomCharacters, pluralize } from './utils/utils';
 import { replayExtractor, GameDataExtractor } from './Extract';
+import { WriteResults } from './Write/WriteResults';
 
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-extraneous-dependencies
@@ -44,18 +45,17 @@ async function main() {
   }
 
   const readFileStream = new ReadFileStream(logger);
+  const prettyPrint = Boolean(limit);
   const gameDataExtractor = new GameDataExtractor(
     createWriteStream(`dist/personalResults${uniqueness}.json`),
-    Boolean(limit),
+    prettyPrint,
   );
-  const jsonifyObjectStream = new JsonifyObjectStream(logger, Boolean(limit)); // pretty print if it's a limited run
-  const writeStream = createWriteStream(`dist/parsedReplays${uniqueness}.json`);
+  const writeStream = new WriteResults(prettyPrint, !prettyPrint);
   Readable.from(fileNames.map((file) => `${DIR_PATH}\\${file}`))
     .pipe(readFileStream)
     .pipe(replayExtractor)
     .pipe(passthrough)
     .pipe(gameDataExtractor)
-    .pipe(jsonifyObjectStream)
     .pipe(writeStream)
     .on('error', (error) => logger.error(error, 'Error processing replay pipeline.'))
     .on('finish', () => {

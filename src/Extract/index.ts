@@ -8,7 +8,7 @@ import { getLogger } from '../utils/Logger';
 import { getPlayerResult } from './UploaderInfo';
 import { getPlayersByDBID } from './Players';
 import { validate } from '../utils/Ajv';
-import { BattleTypes, battleTypeNames } from '../utils/constants';
+import { BattleType, battleTypeNames } from '../utils/constants';
 
 const logger = getLogger('ExtractGameData');
 
@@ -65,7 +65,7 @@ export class GameDataExtractor extends Transform {
       return;
     }
     const parsedPreGame = getPreGameData(preGame, filePath);
-    if (parsedPreGame?.battleTypeCode === BattleTypes.TRAINING) {
+    if (parsedPreGame?.battleTypeCode === BattleType.TRAINING) {
       // don't care about training battles for stats
       callback();
       return;
