@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'development') {
   require('source-map-support').install(); // enable source maps for stack traces
 }
 
-// const DIR_PATH = 'C:\\Games\\World_of_Tanks_NA\\replays';
+// const DIR_PATH = path.join('C:', 'Games', 'World_of_Tanks_NA', 'replays');
 const DIR_PATH = path.join(__dirname, '..', 'replays');
 const logger = getLogger('main');
 
