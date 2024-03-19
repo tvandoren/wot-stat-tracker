@@ -26,7 +26,7 @@ const gameDataSchema: JSONSchemaType<Omit<IGameData, 'playerInfo'>> = {
       [key: string]: number;
     }>,
     arenaTypeID: { type: 'integer' },
-    duration: { type: 'integer' },
+    duration: { type: 'number' },
   },
   required: [
     ...preGameSchema.required,
@@ -34,7 +34,6 @@ const gameDataSchema: JSONSchemaType<Omit<IGameData, 'playerInfo'>> = {
     'finishReason',
     'arenaCreateTime',
     'winningTeam',
-    'teamHealth',
     'arenaTypeID',
     'duration',
   ],
@@ -90,13 +89,13 @@ export class GameDataExtractor extends Transform {
       return;
     }
     const dbidBySessionID = new Map<string, { dbid: number; vehicleType: string }>();
-    Object.keys(generalInfo.vehicles).forEach((avatarId) => {
-      const dbid = (generalInfo.vehicles[avatarId]?.[0] as Record<string, unknown>)?.accountDBID;
-      const vehicleType = (playerInfo[avatarId] as Record<string, unknown>)?.vehicleType;
+    Object.keys(generalInfo.vehicles).forEach((sessionID) => {
+      const dbid = (generalInfo.vehicles[sessionID]?.[0] as Record<string, unknown>)?.accountDBID ?? Number(sessionID); // before anonymizer, sessionID would be the dbid
+      const vehicleType = (playerInfo[sessionID] as Record<string, unknown>)?.vehicleType;
       if (dbid && vehicleType && typeof dbid === 'number' && typeof vehicleType === 'string') {
-        dbidBySessionID.set(avatarId, { dbid, vehicleType });
+        dbidBySessionID.set(sessionID, { dbid, vehicleType });
       } else {
-        logger.warn({ avatarId, dbid, vehicleType }, 'Creating data map for player failed');
+        logger.warn({ sessionID, dbid, vehicleType }, 'Creating data map for player failed');
       }
     });
 
@@ -128,7 +127,10 @@ export class GameDataExtractor extends Transform {
       arenaTypeID: generalInfo.common.arenaTypeID,
       duration: generalInfo.common.duration,
     };
-    const parsedPlayerInfo = Object.entries(resultsByPlayer).map(([dbid, result]) => ({ ...result, dbid }));
+    const parsedPlayerInfo = Object.entries(resultsByPlayer).map(([dbid, result]) => ({
+      accountDBID: Number(dbid),
+      ...result,
+    }));
     if (validate<IGameData>(gameDataSchema, commonGameInfo, logger)) {
       callback(null, { ...commonGameInfo, playerInfo: parsedPlayerInfo });
     } else {

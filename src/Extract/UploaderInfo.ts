@@ -88,29 +88,28 @@ export function getPlayerResult(
     return undefined;
   }
   const personalKeys = Object.keys(personal);
-  if (personalKeys.length !== 2) {
+  const dataKey = personalKeys.find((key) => Number.isInteger(Number(key)));
+  if (dataKey && personalKeys.length !== 2) { // TODO: this is potentially brittle - instead we should detect frontline separately
     logger.warn(
-      { filePath, keys: personalKeys },
-      'Found personal data with more than 2 keys - investigate for additional info',
+      { filePath, keys: personalKeys, dataKey },
+      'Found personal data with more than 2 keys - this is likely a frontline match, which is not yet supported',
     );
     return undefined; // TODO: eventually support frontline
-    // some files found with this... likely for frontline?
-    // C:\Games\World_of_Tanks_NA\replays\20240220_1902_france-F116_Bat_Chatillon_Bourrasque_208_bf_epic_normandy.wotreplay,"keys":["45841","60209","60225","60529","avatar"]
-    // C:\Games\World_of_Tanks_NA\replays\20240220_1931_czech-Cz20_ShPTK_TVP_100_mm_209_wg_epic_suburbia.wotreplay,"keys":["45841","60209","60529","62273","avatar"]
-    // C:\Games\World_of_Tanks_NA\replays\20240220_1958_china-Ch47_BZ_176_209_wg_epic_suburbia.wotreplay,"keys":["45841","60209","60225","60529","avatar"]
-    // C:\Games\World_of_Tanks_NA\replays\20240220_2019_china-Ch47_BZ_176_209_wg_epic_suburbia.wotreplay,"keys":["45841","60209","60529","avatar"]
-    // C:\Games\World_of_Tanks_NA\replays\20240220_2033_china-Ch47_BZ_176_209_wg_epic_suburbia.wotreplay,"keys":["45841","60209","60225","62545","avatar"]
   }
-  const dataKey = personalKeys.find((key) => Number.isInteger(Number(key)));
+  let personalResults: any;
   if (!dataKey) {
-    logger.error({ filePath, keys: personalKeys }, 'Personal data does not contain a number key');
+    personalResults = personal;
+  } else {
+    personalResults = personal[dataKey]; // TODO: handle frontline
+  }
+  if (!personalResults || typeof personalResults !== 'object') {
+    logger.error({ filePath, typeFound: typeof personalResults }, 'Personal data is not an object');
     return undefined;
   }
-  const { [dataKey]: personalResults } = personal; // TODO: handle frontline
 
   const byEnemyVehicle: IResultByEnemyVehicle[] = [];
   Object.keys(personalResults.details).forEach((malformedId) => {
-    const enemySessionID = malformedId.match(/\d+/)?.[0];
+    const enemySessionID = malformedId.match(/\d+/)?.[0] ?? malformedId; // TODO: this will probably need to be changed for frontline
     const { dbid, vehicleType } = (enemySessionID && dbidBySessionID.get(enemySessionID)) || {};
     const unstructured = structuredClone(personalResults.details[malformedId]);
     if (dbid && vehicleType && validate<IUnstructuredResult>(enemyVehicleSchema, unstructured, logger, true)) {

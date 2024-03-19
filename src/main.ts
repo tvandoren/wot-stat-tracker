@@ -4,7 +4,7 @@ import { Readable, PassThrough } from 'stream';
 import path from 'path';
 import { getLogger } from './utils/Logger';
 import { JsonifyObjectStream, ReadFileStream } from './utils/Transform';
-import { generateRandomCharacters, pluralize } from './utils';
+import { generateRandomCharacters, pluralize } from './utils/utils';
 import { replayExtractor, GameDataExtractor } from './Extract';
 
 if (process.env.NODE_ENV === 'development') {

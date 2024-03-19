@@ -96,8 +96,8 @@ export interface IBasePlayerInfo {
   vehicleType: string;
   team: number;
   realName: string;
-  fakeName: string;
   sessionID: string;
+  fakeName?: string;
   clanDBID?: number;
 }
 
@@ -154,10 +154,10 @@ export interface IGameData extends IPreGameData {
   finishReason: number;
   arenaCreateTime: number;
   winningTeam: number;
-  teamHealth: {
+  teamHealth?: {
     [key: string]: number;
   };
   arenaTypeID: number;
   duration: number; // seconds?
-  playerInfo: (IPlayerInfo & { dbid: string })[];
+  playerInfo: (IPlayerInfo & { accountDBID: number })[];
 }

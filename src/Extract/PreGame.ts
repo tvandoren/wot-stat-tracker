@@ -42,7 +42,11 @@ export function getPreGameData(preGame: any, filePath: string): IPreGameData | n
     serverName: preGame.serverName,
     regionCode: preGame.regionCode,
     clientVersions: {
-      fromExe: preGame.clientVersionFromExe,
+      // saw some older versions displayed as `1, 9, 0, 0` so we'll join them with periods instead for consistency
+      fromExe: preGame.clientVersionFromExe
+        ?.split(',')
+        .map((s: string) => s.trim())
+        .join('.'),
       fromXml: preGame.clientVersionFromXml,
     },
     mapName: preGame.mapName,
