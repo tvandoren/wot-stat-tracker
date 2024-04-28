@@ -118,10 +118,10 @@ export class GameDataExtractor extends Transform {
     }
 
     const commonGameInfo = {
+      arenaCreateTime: generalInfo.common.arenaCreateTime,
       ...parsedPreGame,
       arenaUniqueID: generalInfo.arenaUniqueID,
       finishReason: generalInfo.common.finishReason,
-      arenaCreateTime: generalInfo.common.arenaCreateTime,
       winningTeam: generalInfo.common.winnerTeam,
       teamHealth: generalInfo.common.teamHealth,
       arenaTypeID: generalInfo.common.arenaTypeID,
